@@ -1,29 +1,78 @@
 <template>
-  <q-card class="card">
+  <q-card class="">
     <q-card-section>
       <div class="text-h6">
         Search Movie By Title
       </div>
     </q-card-section>
     <q-card-section>
-      <q-input
+      <div class="row justify-between">
+        <q-input
         v-model="searchModel"
-      ></q-input>
+        class="col-xs-8"
+        ></q-input>
+        <q-btn class="col-xs-3 q-pa-sm" @click="search" label="Search"/>
+      </div>
+
+
     </q-card-section>
     <q-card-section>
-      <q-btn @click="search" label="tilted"/>
-    </q-card-section>
-    <q-card-section>
-      <q-scroll-area style="height: 500px; max-width: 700px;">
       <div v-for="movie in listOfMovies" :key="movie.id" class="q-py-xs">
-        {{ movie.title }}
-        <q-card>
-          <q-card-section>
-            <q-img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path"/>
+        <q-card v-if="$q.screen.gt.sm">
+          <q-card-section horizontal>
+            <q-card-section>
+              <div class="column items-center">
+                <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" class="poster" alt="No Image"/>
+              </div>
+
+            </q-card-section>
+            <q-card-section>
+              <div class="text-h6">
+                {{ movie.title }}
+              </div>
+              <q-separator />
+              <div>
+                Release Date: {{ movie.release_date }}
+
+              </div>
+              <q-separator />
+              <div>
+                <div class="text-subtitle2">Overview</div>
+                {{ movie.overview }}
+              </div>
+            </q-card-section>
+
+          </q-card-section>
+
+
+        </q-card>
+        <q-card v-else>
+           <q-card-section>
+            <q-card-section>
+              <div class="column items-center">
+                <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" class="poster" alt="No Image"/>
+              </div>
+
+            </q-card-section>
+            <q-card-section>
+              <div class="text-h6">
+                {{ movie.title }}
+              </div>
+              <q-separator />
+              <div>
+                Release Date: {{ movie.release_date }}
+              </div>
+              <q-separator />
+              <div>
+                <div class="text-subtitle2">Overview</div>
+                {{ movie.overview }}
+
+              </div>
+            </q-card-section>
+
           </q-card-section>
         </q-card>
       </div>
-      </q-scroll-area>
     </q-card-section>
 
   </q-card>
@@ -69,6 +118,9 @@ export default defineComponent({
 <style lang="sass">
 .card
  min-height: 800px
- max-width: 1500px
+ max-width: 1700px
  min-width: 800px
+
+.poster
+ max-height: 200px
 </style>

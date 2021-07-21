@@ -1,8 +1,8 @@
 {
   "name": "revenue-monster",
   "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "Quasar App",
+  "description": "Movie App",
+  "productName": "Movie App",
   "author": "Tuang Ling Pin",
   "private": true,
   "scripts": {
