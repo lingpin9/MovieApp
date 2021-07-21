@@ -13,6 +13,18 @@
     <q-card-section>
       <q-btn @click="search" label="tilted"/>
     </q-card-section>
+    <q-card-section>
+      <q-scroll-area style="height: 500px; max-width: 700px;">
+      <div v-for="movie in listOfMovies" :key="movie.id" class="q-py-xs">
+        {{ movie.title }}
+        <q-card>
+          <q-card-section>
+            <q-img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path"/>
+          </q-card-section>
+        </q-card>
+      </div>
+      </q-scroll-area>
+    </q-card-section>
 
   </q-card>
 </template>
@@ -21,46 +33,34 @@
 import { defineComponent, ref } from 'vue';
 import axios, { AxiosResponse } from 'axios';
 import { API_KEY } from 'src/service/constants';
-import { MovieResponse, ImageResponse, Image } from 'src/service/models';
+import { MovieResponse, ImageResponse, Image, Movie } from 'src/service/models';
 
 export default defineComponent({
   // name: 'ComponentName',
   setup () {
     const searchModel = ref('');
-    const listOfMovies = ref<AxiosResponse<MovieResponse>>();
-    const listOfMovieImages = ref<AxiosResponse<ImageResponse>>();
+    const movieResponse = ref<AxiosResponse<MovieResponse>>();
+    const listOfMovies = ref<Movie[]>([]);
+    // const listOfMovieImages = ref<AxiosResponse<ImageResponse>>();
     const listOfMovieImageLinks = ref<string[]>([]);
 
     return {
       search,
-      searchModel
+      searchModel,
+      listOfMovieImageLinks,
+      listOfMovies
     }
 
     async function search() {
       if (searchModel.value != '') {
         const temp = searchModel.value.replace(/ /g, '%20');
-        listOfMovies.value = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${temp}`);
-        console.log(listOfMovies.value?.data.results);
-        await getImages();
+        movieResponse.value = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${temp}`);
+        if (movieResponse.value?.data.results) {
+          listOfMovies.value = movieResponse.value?.data.results;
+        } else listOfMovies.value = [];
+
+        console.log(listOfMovies.value);
       } else console.log('Nothing')
-    }
-
-    async function getImages() {
-      // debugger;
-      const movieIds: number[] = [];
-      listOfMovies.value?.data.results.forEach(x => movieIds.push(x.id))
-      console.log(movieIds);
-      for (let i = 0; i < movieIds.length; i++) {
-        console.log(movieIds[i]);
-        const temp:AxiosResponse<ImageResponse> = await axios.get(`https://api.themoviedb.org/3/movie/${movieIds[i]}/images?api_key=${API_KEY}`);
-
-        if(temp.data.posters.length > 0) {
-          console.log(temp.data.posters[0])
-          listOfMovieImageLinks.value.push(temp.data.posters[0].file_path);
-        } else listOfMovieImageLinks.value.push('');
-
-      }
-      console.log(listOfMovieImageLinks.value);
     }
   }
 });
