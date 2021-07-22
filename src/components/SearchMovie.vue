@@ -1,5 +1,5 @@
 <template>
-  <q-card class="">
+ <q-card class="card">
     <q-card-section>
       <div class="text-h6">
         Search Movie By Title
@@ -9,9 +9,9 @@
       <div class="row justify-between">
         <q-input
         v-model="searchModel"
-        class="col-xs-8"
+        class="col-9"
         ></q-input>
-        <q-btn class="col-xs-3 q-pa-sm" @click="search" label="Search"/>
+        <q-btn class="col-3 q-pa-sm" @click="search" label="Search" color="primary"/>
       </div>
 
 
@@ -50,7 +50,7 @@
            <q-card-section>
             <q-card-section>
               <div class="column items-center">
-                <img :src="'https://image.tmdb.org/t/p/w500/' + movie.poster_path" class="poster" alt="No Image"/>
+                <img :src="movie.poster_path != null ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : ''" class="poster" alt="No Image"/>
               </div>
 
             </q-card-section>
@@ -75,14 +75,32 @@
       </div>
     </q-card-section>
 
+    <q-dialog v-model="showEmpty">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Empty Search Field</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Please enter movie title into search field.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="OK" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-card>
+
+
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import axios, { AxiosResponse } from 'axios';
 import { API_KEY } from 'src/service/constants';
-import { MovieResponse, ImageResponse, Image, Movie } from 'src/service/models';
+import { MovieResponse, Movie } from 'src/service/models';
 
 export default defineComponent({
   // name: 'ComponentName',
@@ -90,14 +108,15 @@ export default defineComponent({
     const searchModel = ref('');
     const movieResponse = ref<AxiosResponse<MovieResponse>>();
     const listOfMovies = ref<Movie[]>([]);
-    // const listOfMovieImages = ref<AxiosResponse<ImageResponse>>();
     const listOfMovieImageLinks = ref<string[]>([]);
+    const showEmpty = ref(false);
 
     return {
       search,
       searchModel,
       listOfMovieImageLinks,
-      listOfMovies
+      listOfMovies,
+      showEmpty
     }
 
     async function search() {
@@ -108,8 +127,7 @@ export default defineComponent({
           listOfMovies.value = movieResponse.value?.data.results;
         } else listOfMovies.value = [];
 
-        console.log(listOfMovies.value);
-      } else console.log('Nothing')
+      } else showEmpty.value = true;
     }
   }
 });
@@ -117,9 +135,24 @@ export default defineComponent({
 
 <style lang="sass">
 .card
- min-height: 800px
- max-width: 1700px
- min-width: 800px
+ width: 1500px
+
+@media (max-width: 575.98px)
+ .card
+  width: 400px
+
+@media (max-width: 767.98px)
+ .card
+  width: 750px
+
+@media (max-width: 991.98px)
+ .card
+  width: 980px
+
+
+@media (max-width: 1199.98px)
+ .card
+  width: 1100px
 
 .poster
  max-height: 200px
